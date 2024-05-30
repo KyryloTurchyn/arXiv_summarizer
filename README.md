@@ -1,6 +1,19 @@
 # Overview
 PDF-to-PDF arXiv document summarisation program with images and headers extraction. Example, the well-known article "Attention is all you need", document - [arXiv_doc](https://github.com/KyryloTurchyn/arXiv_summarizer/blob/main/arXiv_doc.pdf) and its summarisation [summary](https://github.com/KyryloTurchyn/arXiv_summarizer/blob/main/summary.pdf).
 
+# Installation 
+```
+git clone https://github.com/KyryloTurchyn/arXiv_summarizer
+pip install -r requirements.txt
+```
+To run script:
+```
+python main.py <link> [--p <bool>] [--s <int>]
+```
+where 
+  - `link` - link to arXiv document (e.g. "https://arxiv.org/pdf/1706.03762.pdf")
+  - `--p` - optional flag for image extraction
+  - `--s` - optional flag for size of image 
 # Description
 The essence of the program is to search for headings, summarise the text from heading to heading and finally create a PDF document with summarised text and all images from the original article. In this work we used the Facebook BART model for summarisation, as well as the BART tokeniser.
 
@@ -20,15 +33,15 @@ We get the photos by requesting them on the site and just saving them in a folde
   
   How It Works:
   #### Tokenization without Truncation:
-  The input text is tokenized using a specified tokenizer with no maximum length limit (max_length=None) and without truncation (truncation=False). This ensures that all the input text is tokenized for processing. 
+  The input text is tokenized using a specified tokenizer with no maximum length limit (`max_length=None`) and without truncation (`truncation=False`). This ensures that all the input text is tokenized for processing. 
   #### Chunking:
   The tokenized text is divided into chunks. Each chunk size is determined by the model's maximum token length capability (e.g., 1024 tokens for BART). The chunking process respects word boundaries by ensuring that chunks end at the last complete word within the limit.  
   #### Batch Preparation:
-  Each chunk is wrapped in a PyTorch tensor and added to a batch list (inputs_batch_lst). This list of tensors is prepared for batch processing by the model.  
+  Each chunk is wrapped in a PyTorch tensor and added to a batch list (`inputs_batch_lst`). This list of tensors is prepared for batch processing by the model.  
   #### Summary Generation:
-  The model generates a summary for each tensor in the batch list using a beam search strategy with four beams (num_beams=4). The max_length parameter limits the summary length, and early_stopping improves efficiency by halting the generation once a satisfactory summary end is reached.  
+  The model generates a summary for each tensor in the batch list using a beam search strategy with four beams (`num_beams=4)`. The `max_length` parameter limits the summary length, and `early_stopping` improves efficiency by halting the generation once a satisfactory summary end is reached.  
   #### Decoding and Aggregation:
-  Each generated summary, represented by token IDs, is decoded back into text, skipping any special tokens and maintaining original tokenization spaces. The decoded summaries are collected into a list (summary_batch_lst).  
+  Each generated summary, represented by token IDs, is decoded back into text, skipping any special tokens and maintaining original tokenization spaces. The decoded summaries are collected into a list (`summary_batch_lst`).  
   #### Concatenation:
   All individual summaries are concatenated into a single string with newline characters separating each summary, forming the final comprehensive summary output.  
   #### Return Value:
@@ -39,4 +52,4 @@ We get the photos by requesting them on the site and just saving them in a folde
   After that we optionally add images
 # Notes
 #### 1) The programme does not work on documents where the text format is given as columnar format
-#### 2) There may be a problem with images, as the image size may be too large. For this reason I have entered and marked in the code the values that can be changed depending on the image size.
+#### 2) There may be a problem with images, as the image size may be too large. For this reason I have added `--s` flag.
